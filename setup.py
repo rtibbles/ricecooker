@@ -60,6 +60,7 @@ setup(
             "vcrpy==7.0.0; python_version >='3.10'",
             "mock==5.2.0",
         ],
+        "google_drive": ["google-api-python-client", "google-auth"],
     },
     python_requires=">=3.9, <3.13",
     license="MIT license",
