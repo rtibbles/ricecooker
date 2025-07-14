@@ -260,6 +260,17 @@ if not tempfile.tempdir:
     tempfile.tempdir = chef_temp_dir
 
 
+# Slack webhook URL for channel upload notifications
+SLACK_WEBHOOK_URL = os.getenv("SLACK_WEBHOOK_URL", None)
+if SLACK_WEBHOOK_URL and not SLACK_WEBHOOK_URL.startswith(
+    "https://hooks.slack.com/services/"
+):
+    LOGGER.warning(
+        "Invalid Slack webhook URL provided. Notifications will be disabled."
+    )
+    SLACK_WEBHOOK_URL = None
+
+
 # Record data about past chef runs in chefdata/ dir
 DATA_DIR = "chefdata"
 DATA_FILENAME = "chef_data.json"
