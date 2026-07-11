@@ -11,7 +11,9 @@ import socket
 import tempfile
 
 import requests
+from requests.adapters import HTTPAdapter
 from requests_file import FileAdapter
+from urllib3.util.retry import Retry
 
 UPDATE = False
 COMPRESS = False
@@ -196,6 +198,22 @@ RESTORE_DIRECTORY = "restore"
 
 # Session for communicating to Kolibri Studio
 SESSION = requests.Session()
+
+# Transport-level backoff for GCS uploads (resumable and legacy single-PUT)
+# only — never applies to Studio API calls.
+SESSION.mount(
+    "https://storage.googleapis.com/",
+    HTTPAdapter(
+        max_retries=Retry(
+            total=5,
+            backoff_factor=1,
+            status_forcelist=[500, 502, 503, 504],
+            allowed_methods={"PUT", "POST"},
+            redirect=False,
+            respect_retry_after_header=True,
+        )
+    ),
+)
 
 # Cache for filenames
 FILECACHE_DIRECTORY = os.getenv(
